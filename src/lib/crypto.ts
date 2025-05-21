@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import prand from 'pure-rand';
-import { v4, v5 } from 'uuid';
+import { v4, v5, v7 } from 'uuid';
 
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16;
@@ -77,7 +77,9 @@ export function secret() {
 }
 
 export function uuid(...args: any) {
-  if (!args.length) return v4();
+  if (!args.length) {
+    return process.env.UUID_VERSION == 'v4' ? v4() : v7();
+  }
 
   return v5(hash(...args, secret()), v5.DNS);
 }
