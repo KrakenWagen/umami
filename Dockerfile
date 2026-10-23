@@ -1,5 +1,22 @@
+# Latest Node 22 Alpine. Newer releases are picked up on pull.
+# Builds fail if for node version < 22.23.4
+FROM node:22-alpine AS node-base
+RUN node <<'EOF'
+const required = [22, 23, 4];
+const current = process.versions.node.split('.').map(Number);
+
+for (let i = 0; i < required.length; i++) {
+  const part = current[i] ?? 0;
+  if (part > required[i]) break;
+  if (part < required[i]) {
+    console.error(`Node ${process.versions.node} is older than ${required.join('.')}`);
+    process.exit(1);
+  }
+}
+EOF
+
 # Install dependencies only when needed
-FROM node:22-alpine AS deps
+FROM node-base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
@@ -8,7 +25,7 @@ RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile
 
 # Rebuild the source code only when needed
-FROM node:22-alpine AS builder
+FROM node-base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -25,7 +42,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build-docker
 
 # Production image, copy all the files and run next
-FROM node:22-alpine AS runner
+FROM node-base AS runner
 WORKDIR /app
 
 ARG NODE_OPTIONS
