@@ -87,6 +87,10 @@ const headers = [
     headers: apiHeaders,
   },
   {
+    source: '/posthog/:path*',
+    headers: apiHeaders,
+  },
+  {
     source: '/:path*',
     headers: defaultHeaders,
   },

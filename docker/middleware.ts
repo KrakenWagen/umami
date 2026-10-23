@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { posthogPathnameWithoutSlash } from '@/server/posthog';
 
 export const config = {
   matcher: '/:path*',
@@ -64,8 +65,26 @@ function disableLogin(request: NextRequest) {
   }
 }
 
+function posthogCollect(request: NextRequest) {
+  const stripped = posthogPathnameWithoutSlash(request.nextUrl.pathname);
+
+  if (!stripped) {
+    return;
+  }
+
+  const url = request.nextUrl.clone();
+  url.pathname = stripped;
+  return NextResponse.rewrite(url);
+}
+
 export default function middleware(req: NextRequest) {
-  const fns = [customCollectEndpoint, customScriptName, customScriptUrl, disableLogin];
+  const fns = [
+    posthogCollect,
+    customCollectEndpoint,
+    customScriptName,
+    customScriptUrl,
+    disableLogin,
+  ];
 
   for (const fn of fns) {
     const res = fn(req);
