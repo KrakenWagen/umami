@@ -118,6 +118,35 @@ test('treats engage without an event name as identify', async () => {
   expect(body.payload.data).toEqual({ name: 'Ada' });
 });
 
+test('reuses the collector cache for the same distinct id', async () => {
+  const caches: (string | null)[] = [];
+
+  mockedCollect.mockImplementation(async (_body, collectorRequest) => {
+    const token = collectorRequest.headers.get('x-umami-cache');
+    caches.push(token);
+
+    return {
+      status: 'stored',
+      body: { cache: `token-${caches.length}`, sessionId: 'session', visitId: 'visit' },
+    };
+  });
+
+  const response = await handlePostHog(
+    request('/posthog/e/', {
+      api_key: websiteId,
+      batch: [
+        { event: 'one', distinct_id: 'user-1' },
+        { event: 'two', distinct_id: 'user-1' },
+        { event: 'three', distinct_id: 'user-2' },
+        { event: 'four', distinct_id: 'user-1' },
+      ],
+    }),
+  );
+
+  expect(response.status).toBe(200);
+  expect(caches).toEqual([null, 'token-1', null, 'token-2']);
+});
+
 test('answers a beacon with an empty 204', async () => {
   const response = await handlePostHog(
     new Request(`http://localhost/posthog/e/?beacon=1`, {

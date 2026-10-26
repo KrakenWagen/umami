@@ -34,8 +34,19 @@ export async function submitBodies(
 
   const request = collectorRequest(headers);
   let stored = 0;
+  // Same distinct id: the collector skips the website lookup and session insert.
+  const sessionCache = new Map<string, string>();
 
   for (const body of parsedBodies) {
+    const sessionKey = body.payload.id ?? '';
+    const cache = sessionCache.get(sessionKey);
+
+    if (cache) {
+      request.headers.set('x-umami-cache', cache);
+    } else {
+      request.headers.delete('x-umami-cache');
+    }
+
     let outcome;
 
     try {
@@ -50,6 +61,7 @@ export async function submitBodies(
 
     if (outcome.status === 'stored') {
       stored += 1;
+      sessionCache.set(sessionKey, outcome.body.cache);
       continue;
     }
 
