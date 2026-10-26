@@ -1,0 +1,27 @@
+.tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 140px;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.question {
+  font-weight: 700;
+  color: var(--base800);
+}
+
+.value {
+  margin-top: 12px;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--base900);
+}
+
+.detail {
+  margin-top: 8px;
+  color: var(--base700);
+}

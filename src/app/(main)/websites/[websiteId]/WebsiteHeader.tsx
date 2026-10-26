@@ -56,6 +56,11 @@ export function WebsiteHeader({
       icon: <Icons.Reports />,
       path: '/reports',
     },
+    {
+      label: formatMessage(labels.metrics),
+      icon: <Icons.BarChart />,
+      path: '/metrics',
+    },
   ];
 
   return (
