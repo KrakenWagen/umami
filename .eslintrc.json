@@ -46,5 +46,13 @@
   },
   "globals": {
     "React": "writable"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["next-env.d.ts"],
+      "rules": {
+        "@typescript-eslint/triple-slash-reference": "off"
+      }
+    }
+  ]
 }
