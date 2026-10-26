@@ -46,7 +46,9 @@
     "postbuild": "node scripts/postbuild.js",
     "test": "jest",
     "cypress-open": "cypress open cypress run",
-    "cypress-run": "cypress run cypress run"
+    "cypress-run": "cypress run cypress run",
+    "posthog-fixture": "npm --prefix e2e/react-app run dev",
+    "cypress-posthog": "cypress run --browser chrome --config-file cypress.posthog.config.ts"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [

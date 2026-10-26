@@ -1,0 +1,19 @@
+{
+  "name": "umami-posthog-react-fixture",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5173 --strictPort --host 127.0.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "posthog-js": "^1.364.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.6.0",
+    "typescript": "^5.5.3",
+    "vite": "^6.0.0"
+  }
+}

@@ -3,6 +3,7 @@ import { defineConfig } from 'cypress';
 export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:3000',
+    excludeSpecPattern: 'cypress/e2e/posthog-sdk.cy.ts',
   },
   // default username / password on init
   env: {
