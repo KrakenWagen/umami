@@ -25,6 +25,16 @@ export function captureKind(pathname: string): CaptureKind | undefined {
   return route?.kind;
 }
 
+// Next's built-in slash redirect is a 308, which drops sendBeacon bodies.
+// skipTrailingSlashRedirect turns that off, and this restores it for every other path.
+export function redirectPathnameWithoutTrailingSlash(pathname: string) {
+  if (pathname.length <= 1 || !pathname.endsWith('/')) {
+    return;
+  }
+
+  return stripTrailingSlash(pathname);
+}
+
 // SDKs append a trailing slash. Next would 308 that, which sendBeacon drops.
 export function posthogPathnameWithoutSlash(pathname: string) {
   const stripped = stripTrailingSlash(pathname);

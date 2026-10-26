@@ -191,6 +191,9 @@ export default {
     defaultLocale,
   },
   basePath,
+  // The capture SDK posts to /posthog/e/ and sendBeacon drops a 308.
+  // Middleware rewrites that slash. Other trailing slashes still redirect there.
+  skipTrailingSlashRedirect: true,
   output: 'standalone',
   eslint: {
     ignoreDuringBuilds: true,

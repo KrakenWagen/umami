@@ -1,18 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { posthogPathnameWithoutSlash } from '@/server/posthog';
+import {
+  posthogPathnameWithoutSlash,
+  redirectPathnameWithoutTrailingSlash,
+} from '@/server/posthog/lib/paths';
 
 export function middleware(request: NextRequest) {
   const stripped = posthogPathnameWithoutSlash(request.nextUrl.pathname);
 
-  if (!stripped) {
-    return NextResponse.next();
+  if (stripped) {
+    const url = new URL(request.url);
+    url.pathname = stripped;
+    return NextResponse.rewrite(url);
   }
 
-  const url = request.nextUrl.clone();
-  url.pathname = stripped;
-  return NextResponse.rewrite(url);
+  const normalized = redirectPathnameWithoutTrailingSlash(request.nextUrl.pathname);
+
+  if (normalized) {
+    const url = new URL(request.url);
+    url.pathname = normalized;
+    return NextResponse.redirect(url, 308);
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/posthog/:path*'],
+  matcher: ['/:path*'],
 };

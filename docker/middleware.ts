@@ -1,5 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { posthogPathnameWithoutSlash } from '@/server/posthog';
+import {
+  posthogPathnameWithoutSlash,
+  redirectPathnameWithoutTrailingSlash,
+} from '@/server/posthog/lib/paths';
 
 export const config = {
   matcher: '/:path*',
@@ -72,7 +75,7 @@ function posthogCollect(request: NextRequest) {
     return;
   }
 
-  const url = request.nextUrl.clone();
+  const url = new URL(request.url);
   url.pathname = stripped;
   return NextResponse.rewrite(url);
 }
@@ -91,6 +94,14 @@ export default function middleware(req: NextRequest) {
     if (res) {
       return res;
     }
+  }
+
+  const normalized = redirectPathnameWithoutTrailingSlash(req.nextUrl.pathname);
+
+  if (normalized) {
+    const url = new URL(req.url);
+    url.pathname = normalized;
+    return NextResponse.redirect(url, 308);
   }
 
   return NextResponse.next();
